@@ -1,0 +1,16 @@
+services:
+  mariadb:
+    image: mariadb:11
+    container_name: devwerk-mariadb
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: devwerk
+      MARIADB_USER: devwerk
+      MARIADB_PASSWORD: devwerk
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    command: ["--character-set-server=utf8mb4","--collation-server=utf8mb4_unicode_ci"]
+volumes:
+  mariadb_data:

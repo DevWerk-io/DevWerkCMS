@@ -1,0 +1,45 @@
+# Node modules
+node_modules/
+
+# Build output (Angular / Frontend)
+dist/
+build/
+tmp/
+out-tsc/
+
+# IDE & Editor
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.log
+
+# Environment Files (Secrets!)
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# .NET build output
+bin/
+obj/
+*.user
+*.rsuser
+*.cache/
+*.config
+
+# Paket-Manager-Ordner
+packages/

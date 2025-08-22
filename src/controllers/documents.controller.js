@@ -59,6 +59,7 @@ export async function ingestBatch(req, res) {
 const ListQuery = z.object({
   q: z.string().optional(),                // Freitext (Firma/Sitz/Keyword)
   city: z.string().optional(),             // Sitz
+  address: z.string().optional(), 
   keyword: z.string().optional(),          // einzelnes Keyword
   keywords: z.string().optional(),         // mehrere: "software,handel"
   from: z.string().optional(),             // YYYY-MM-DD (last_entry_date >=)
@@ -84,6 +85,7 @@ export async function list(req, res) {
     const result = await RegisterRepo.listSummaries({
       q: q.q,
       city: q.city,
+      address: q.address,
       keywords: keywordList,    // Array
       from: q.from,
       to: q.to,

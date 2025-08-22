@@ -81,7 +81,7 @@ export async function listSummaries(opts) {
 
     // Items holen
     const [rows] = await conn.execute(
-      `SELECT id, original_filename, company_name, seat_city, purpose_keyword, share_capital_eur,
+      `SELECT id, original_filename, company_name, seat_city, seat_adress, purpose_keyword, share_capital_eur,
               JSON_EXTRACT(managing_directors, '$') AS managing_directors,
               last_entry_date, created_at
        FROM register_summaries

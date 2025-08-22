@@ -31,6 +31,6 @@ export async function extractText(buffer) {
       .filter(Boolean);
     fullText += lines.join(' ') + '\n\n';
   }
-
+  
   return fullText.replace(/\r\n/g, '\n').replace(/\f/g, '\n').trim();
 }

@@ -4,16 +4,18 @@ import { clampLen } from '../utils/strings.js';
 export async function insertSummary(summary) {
   const company = clampLen(summary.company_name, 512);
   const seat    = clampLen(summary.seat_city, 120);
+  const address = summary.seat_address ? clampLen(summary.seat_address, 255) : null;
   const keyword = summary.purpose_keyword == null ? null : clampLen(summary.purpose_keyword, 120);
 
   const sql = `INSERT INTO register_summaries
-    (original_filename, company_name, seat_city, purpose_keyword, share_capital_eur, managing_directors, last_entry_date)
-    VALUES (?, ?, ?, ?, ?, ?, ?)`;
+    (original_filename, company_name, seat_city, seat_address, purpose_keyword, share_capital_eur, managing_directors, last_entry_date)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
 
   const params = [
     summary.original_filename,
     company,
     seat,
+    address,
     keyword,
     summary.share_capital_eur,
     JSON.stringify(summary.managing_directors || []),

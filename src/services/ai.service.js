@@ -9,6 +9,7 @@ const SummarySchema = z.object({
   original_filename: z.string(),
   company_name: z.string().min(1).max(512),
   seat_city: z.string().min(1).max(120),
+  seat_address: z.string().nullable(),   
   purpose_keyword: z.string().nullable(),
   share_capital_eur: z.number().nullable(),
   managing_directors: z.array(z.string()).default([]),
@@ -34,6 +35,7 @@ const jsonSchema = {
             "original_filename",
             "company_name",
             "seat_city",
+            "seat_address",
             "purpose_keyword",
             "share_capital_eur",
             "managing_directors",
@@ -43,6 +45,7 @@ const jsonSchema = {
             original_filename: { type: "string" },
             company_name: { type: "string" },
             seat_city: { type: "string" },
+            seat_address: { type: ["string", "null"] },
             purpose_keyword: { type: ["string", "null"] },
             share_capital_eur: { type: ["number", "null"] },
             managing_directors: { type: "array", items: { type: "string" } },
@@ -65,6 +68,7 @@ const SYSTEM = `Du extrahierst Registerdaten aus PDF-Texten. Gib NUR JSON nach S
       "original_filename": "...",
       "company_name": "...",
       "seat_city": "...",
+      "seat_address": "Straße Hausnummer, PLZ Ort" | null,
       "purpose_keyword": "software|handel|beratung|...|null",
       "share_capital_eur": 25000 | null,
       "managing_directors": ["Vorname Nachname", "..."],
@@ -120,6 +124,7 @@ export async function normalizeSummaries(items) {
     ...x,
     company_name: (x.company_name || '').slice(0, 512),
     seat_city: (x.seat_city || '').slice(0, 120),
+    seat_address: x.seat_address ? x.seat_address.slice(0, 255) : null,
     purpose_keyword: x.purpose_keyword ?? null
   }));
 

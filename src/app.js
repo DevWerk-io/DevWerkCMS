@@ -6,41 +6,56 @@ import routes from './routes/index.js';
 
 const app = express();
 
-/* ---- CORS ---- */
+/* ---------- CORS ---------- */
 const ORIGINS = (process.env.FRONTEND_ORIGINS || 'https://app.devwerk.io')
   .split(',')
   .map(s => s.trim())
   .filter(Boolean);
 
-// Optional: setze ACAO + Vary selbst (damit immer exakt der anfragende Origin gespiegelt wird)
+// Spiegel den erlaubten Origin selbst (verhindert falsche/zuvor gecachte Werte)
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   if (origin && ORIGINS.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Vary', 'Origin');
+    if (CORS_DEBUG) res.setHeader('X-Allowed-Origin', origin);
   }
-  next();
+  return next();
 });
 
 // Haupt-CORS-Handling inkl. Preflight
 app.use(cors({
   origin: (origin, cb) => {
-    if (!origin) return cb(null, true);          // z.B. curl/Server-zu-Server
+    // Server-to-Server (kein Origin-Header) zulassen
+    if (!origin) return cb(null, true);
     cb(null, ORIGINS.includes(origin));
   },
   methods: ['GET','POST','PUT','PATCH','DELETE','OPTIONS'],
   allowedHeaders: ['Content-Type','Authorization'],
-  credentials: false,                             // nur auf true, wenn Cookies/Authorization-Credentials cross-site nötig sind
+  credentials: false,
   optionsSuccessStatus: 204
 }));
 
-// Preflight früh beantworten (optional, aber schnell)
+// Preflight schnell beantworten
 app.options('*', cors());
 
-/* ---- Body Parser & Routen ---- */
+/* ---------- Body Parser & Routen ---------- */
 app.use(express.json({ limit: '2mb' }));
+
+// kleiner Healthcheck (hilft bei Nginx/Upstream-Checks)
+app.get('/api/health', (_req, res) => {
+  res.json({ ok: true, ts: new Date().toISOString(), origins: ORIGINS });
+});
+
 app.use('/api', routes);
 
-/* ---- Start ---- */
+/* ---------- Fehler-Handler (optional, aber hilfreich) ---------- */
+app.use((req, res) => res.status(404).json({ error: 'Not Found' }));
+app.use((err, _req, res, _next) => {
+  console.error(err);
+  res.status(500).json({ error: 'Serverfehler', details: String(err?.message || err) });
+});
+
+/* ---------- Start ---------- */
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`[OK] Server läuft auf :${PORT}`));
+app.listen(PORT, () => console.log(`[OK] Server läuft auf :${PORT} | CORS Origins: ${ORIGINS.join(', ')}`));

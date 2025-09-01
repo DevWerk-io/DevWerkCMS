@@ -18,7 +18,6 @@ app.use((req, res, next) => {
   if (origin && ORIGINS.includes(origin)) {
     res.setHeader('Access-Control-Allow-Origin', origin);
     res.setHeader('Vary', 'Origin');
-    if (CORS_DEBUG) res.setHeader('X-Allowed-Origin', origin);
   }
   return next();
 });
